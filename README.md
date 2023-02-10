@@ -1,5 +1,4 @@
-## Hi! I'm <a href="https://www.linkedin.com/in/andrea-cultraro-089929120/">Andrea Cultraro</a>
-
+<p align="center"><img src="./assets/github_profile.png"></p>
 ---
 
 [![Linkedin Badge](https://img.shields.io/badge/-LinkedIn-0e76a8?style=flat-square&logo=Linkedin&logoColor=white)](https://www.linkedin.com/in/andrea-cultraro-089929120/)
