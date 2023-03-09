@@ -5,7 +5,7 @@
 
 <p align="center"><img src="./assets/github_profile.png"></p>
 
-<p align="center"><i>I'm a self-taught web developer, based in Italy</i> 🇮🇹</p>
+<p align="center"><i>I'm a self-taught web developer, based in Italy</i></p>
 
 ---
 
