@@ -33,3 +33,4 @@
 ---
 
 ![AndrewCult's GitHub stats](https://github-readme-stats.vercel.app/api?username=AndrewCult&theme=gruvbox&count_private=true&show_icons=true&hide=stars,contribs)
+[![roadmap.sh](https://api.roadmap.sh/v1-badge/tall/6554cb2f68ca60261333fcbb?variant=dark)](https://roadmap.sh)
