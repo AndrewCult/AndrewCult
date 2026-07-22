@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Andrea Cultraro — Imparare a costruire</title>
+<meta name="description" content="Andrea Cultraro: sviluppo da autodidatta, dal web verso l'hardware. Progetti in C, sistemi, e il percorso per arrivarci.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&family=Manrope:wght@300..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0E1114;
+    --surface:#161B21;
+    --line:rgba(232,234,237,.10);
+    --line-soft:rgba(232,234,237,.055);
+    --text:#E8EAED;
+    --muted:#96A0AB;
+    --accent:#D9772E;
+    --accent-dim:rgba(217,119,46,.13);
+    --live:#6E9E7C;
+    --display:'Newsreader',serif;
+    --body:'Manrope',sans-serif;
+    --mono:'IBM Plex Mono',monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:var(--body);font-weight:340;line-height:1.68;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent-dim);color:var(--accent)}
+  a{color:inherit;text-decoration:none}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+  /* ---------- Spina di navigazione ---------- */
+  .spine{
+    position:fixed;left:0;top:0;bottom:0;width:74px;
+    border-right:1px solid var(--line);
+    display:flex;flex-direction:column;align-items:center;
+    justify-content:space-between;padding:28px 0;z-index:20;background:var(--bg);
+  }
+  .spine .brand{
+    color:var(--accent);display:flex;flex-direction:column;align-items:center;gap:16px;
+    opacity:.92;transition:opacity .25s;
+  }
+  .spine .brand:hover{opacity:1}
+  .spine .wordmark{
+    font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--text);
+    writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;
+  }
+  .spine nav{display:flex;flex-direction:column;gap:28px}
+  .spine nav a{
+    font-family:var(--mono);font-size:.61rem;letter-spacing:.19em;
+    text-transform:uppercase;color:var(--muted);
+    writing-mode:vertical-rl;transform:rotate(180deg);transition:color .25s;
+  }
+  .spine nav a:hover,.spine nav a.active{color:var(--accent)}
+  .spine .place{
+    font-family:var(--mono);font-size:.58rem;color:var(--muted);
+    writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.2em;opacity:.7;
+  }
+
+  main{margin-left:74px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 clamp(24px,5vw,68px)}
+
+  .eyebrow{
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--accent);
+    display:flex;align-items:center;gap:14px;
+  }
+  .eyebrow::after{content:'';height:1px;width:52px;background:var(--accent);opacity:.4}
+
+  /* ---------- Hero ---------- */
+  .hero{min-height:90vh;display:flex;align-items:center;border-bottom:1px solid var(--line)}
+  .hero-inner{padding:130px 0 90px}
+  .hero h1{
+    font-family:var(--display);
+    font-size:clamp(2.6rem,7.4vw,5.4rem);
+    font-weight:340;line-height:1.06;letter-spacing:-.02em;
+    margin:28px 0 32px;max-width:16em;
+  }
+  .hero h1 em{font-style:italic;color:var(--accent)}
+  .hero .lede{max-width:33em;color:var(--muted);font-size:1.07rem}
+  .hero .lede-en{
+    max-width:33em;margin-top:18px;color:var(--muted);opacity:.62;
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.02em;line-height:1.75;
+  }
+  .hero .actions{margin-top:46px;display:flex;gap:26px;align-items:center;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--text);border:1px solid var(--line);padding:14px 24px;border-radius:2px;
+    transition:border-color .25s,background .25s;
+  }
+  .btn:hover{border-color:var(--accent);background:var(--accent-dim)}
+  .btn.ghost{border:none;padding:14px 0;color:var(--muted)}
+  .btn.ghost:hover{color:var(--accent);background:none}
+
+  section{padding:112px 0;border-bottom:1px solid var(--line)}
+  .section-head{margin-bottom:20px}
+  .section-head h2{
+    font-family:var(--display);font-weight:340;
+    font-size:clamp(1.9rem,4vw,2.7rem);letter-spacing:-.015em;margin-top:18px;
+  }
+  .section-intro{color:var(--muted);max-width:40em;margin-bottom:56px}
+
+  /* ---------- Progetti ---------- */
+  .project{
+    display:grid;grid-template-columns:minmax(190px,1fr) 2.4fr;gap:36px;
+    padding:40px 0;border-top:1px solid var(--line);
+    position:relative;transition:padding-left .35s ease;
+  }
+  .project:last-of-type{border-bottom:1px solid var(--line)}
+  .project::before{
+    content:'';position:absolute;left:0;top:-1px;height:1px;width:0;
+    background:var(--accent);transition:width .5s ease;
+  }
+  .project:hover::before{width:100%}
+  .project:hover{padding-left:14px}
+  .project h3{
+    font-family:var(--display);font-weight:420;font-size:1.5rem;
+    letter-spacing:-.012em;margin-bottom:6px;
+  }
+  .project .sub{
+    font-family:var(--mono);font-size:.65rem;color:var(--muted);
+    letter-spacing:.11em;text-transform:uppercase;margin-bottom:18px;
+  }
+  .project .meta{
+    font-family:var(--mono);font-size:.65rem;color:var(--muted);
+    letter-spacing:.09em;display:flex;flex-direction:column;gap:14px;padding-top:6px;
+  }
+  .meta .row b{
+    display:block;color:var(--accent);font-weight:500;
+    text-transform:uppercase;letter-spacing:.14em;font-size:.6rem;margin-bottom:3px;
+  }
+  .project p{color:var(--muted);max-width:40em;margin-bottom:.9em}
+  .project p a.inline{
+    color:var(--text);border-bottom:1px solid var(--accent);
+    padding-bottom:1px;transition:color .25s;
+  }
+  .project p a.inline:hover{color:var(--accent)}
+  .project p:last-of-type{margin-bottom:0}
+  .project .links{margin-top:20px;display:flex;gap:22px;flex-wrap:wrap}
+  .project .link{
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--text);display:inline-flex;gap:8px;align-items:center;
+    border-bottom:1px solid var(--line);padding-bottom:4px;transition:border-color .25s,color .25s;
+  }
+  .project .link:hover{color:var(--accent);border-color:var(--accent)}
+  .project .link.muted{color:var(--muted);border-bottom-color:transparent;cursor:default}
+  .project .link.muted:hover{color:var(--muted)}
+
+  /* Indicatore di stato: cursore da terminale */
+  .status{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);
+    font-size:.6rem;letter-spacing:.14em;text-transform:uppercase}
+  .status .blk{width:7px;height:13px;background:var(--live);display:inline-block}
+  .status.active .blk{animation:blink 1.5s steps(1) infinite}
+  .status.paused .blk{background:var(--muted);opacity:.5}
+  .status.done .blk{background:var(--accent)}
+  @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:.15}}
+
+  /* ---------- Chi sono ---------- */
+  .about{display:grid;grid-template-columns:1.15fr .85fr;gap:70px;align-items:start}
+  .about .bio p{color:var(--muted);margin-bottom:1.25em;max-width:36em}
+  .about .bio p.lead{color:var(--text);font-size:1.13rem}
+  .portrait{
+    background:var(--surface);border:1px solid var(--line);
+    padding:26px 20px 20px;display:flex;flex-direction:column;
+    align-items:center;gap:20px;position:sticky;top:40px;
+  }
+  .portrait svg{width:100%;max-width:250px;height:auto;display:block}
+  .portrait figcaption{
+    font-family:var(--mono);font-size:.6rem;color:var(--muted);
+    letter-spacing:.15em;text-transform:uppercase;text-align:center;
+  }
+  .portrait .cursor{animation:blink 1.5s steps(1) infinite}
+  .facets{margin-top:8px;border-top:1px solid var(--line-soft)}
+  .facet{
+    display:grid;grid-template-columns:150px 1fr;gap:24px;
+    padding:18px 0;border-bottom:1px solid var(--line-soft);align-items:baseline;
+  }
+  .facet b{
+    font-family:var(--mono);font-size:.62rem;color:var(--accent);
+    letter-spacing:.15em;text-transform:uppercase;font-weight:500;
+  }
+  .facet span{color:var(--muted);font-size:.95rem}
+  .skills{margin-top:34px;display:flex;flex-wrap:wrap;gap:9px}
+  .skills-note{
+    margin-top:18px;font-family:var(--mono);font-size:.66rem;
+    color:var(--muted);opacity:.72;letter-spacing:.02em;line-height:1.8;
+  }
+  .skills span{
+    font-family:var(--mono);font-size:.63rem;letter-spacing:.09em;
+    border:1px solid var(--line);padding:8px 14px;border-radius:2px;color:var(--muted);
+  }
+
+  /* ---------- Contatti ---------- */
+  .contact{border-bottom:none}
+  .contact h2{
+    font-family:var(--display);font-weight:340;font-style:italic;
+    font-size:clamp(2.4rem,6.4vw,4.4rem);letter-spacing:-.02em;margin:22px 0 20px;
+  }
+  .contact p{color:var(--muted);max-width:34em}
+  .contact .email{
+    display:inline-block;margin-top:36px;
+    font-family:var(--mono);font-size:clamp(.88rem,2.3vw,1.1rem);letter-spacing:.03em;
+    color:var(--text);border-bottom:1px solid var(--accent);padding-bottom:6px;transition:color .25s;
+  }
+  .contact .email:hover{color:var(--accent)}
+  .socials{margin-top:46px;display:flex;gap:26px;flex-wrap:wrap}
+  .socials a{
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);transition:color .25s;
+  }
+  .socials a:hover{color:var(--accent)}
+
+  footer{padding:36px 0 46px}
+  footer .wrap{
+    display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:.61rem;color:var(--muted);letter-spacing:.12em;
+    border-top:1px solid var(--line);padding-top:32px;
+  }
+
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    .status.active .blk{animation:none}
+    .portrait .cursor{animation:none}
+    html{scroll-behavior:auto}
+  }
+
+  @media (max-width:820px){
+    .spine{
+      position:fixed;top:0;left:0;right:0;bottom:auto;width:auto;height:54px;
+      flex-direction:row;padding:0 18px;border-right:none;border-bottom:1px solid var(--line);
+    }
+    .spine nav{flex-direction:row;gap:16px}
+    .spine .brand{flex-direction:row;gap:10px}
+    .spine nav a,.spine .place,.spine .wordmark{writing-mode:horizontal-tb;transform:none}
+    .spine .wordmark{font-size:.58rem;letter-spacing:.14em}
+    .spine .place{display:none}
+    main{margin-left:0;padding-top:54px}
+    .hero{min-height:auto}
+    .hero-inner{padding:80px 0 64px}
+    section{padding:80px 0}
+    .project{grid-template-columns:1fr;gap:16px}
+    .project .meta{flex-direction:row;flex-wrap:wrap;gap:22px}
+    .about{grid-template-columns:1fr;gap:44px}
+    .portrait{position:static}
+    .facet{grid-template-columns:1fr;gap:4px}
+  }
+
+  @media (max-width:560px){
+    .spine .wordmark{display:none}
+    .spine nav{gap:14px}
+    .spine nav a{font-size:.58rem;letter-spacing:.12em}
+  }
+</style>
+</head>
+<body>
+
+<aside class="spine">
+  <a class="brand" href="#top" aria-label="Andrea Cultraro — torna all'inizio">
+    <svg viewBox="0 0 64 64" width="30" height="30" aria-hidden="true">
+      <g stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <path d="M45 55 V45 h5 a1.8 1.8 0 0 0 1.5-2.8 L47 33.5 C48 21.5 39.5 11 27.5 11 16.5 11 9 19.5 9 30 c0 5.5 2 9 4.5 11.5 V55"/>
+      </g>
+      <g fill="currentColor">
+        <g transform="translate(26,30)">
+          <rect x="-2.1" y="-12.2" width="4.2" height="4.6" rx="1"/>
+          <rect x="-2.1" y="7.6" width="4.2" height="4.6" rx="1"/>
+          <rect x="-12.2" y="-2.1" width="4.6" height="4.2" rx="1"/>
+          <rect x="7.6" y="-2.1" width="4.6" height="4.2" rx="1"/>
+          <g transform="rotate(45)">
+            <rect x="-2.1" y="-12.2" width="4.2" height="4.6" rx="1"/>
+            <rect x="-2.1" y="7.6" width="4.2" height="4.6" rx="1"/>
+            <rect x="-12.2" y="-2.1" width="4.6" height="4.2" rx="1"/>
+            <rect x="7.6" y="-2.1" width="4.6" height="4.2" rx="1"/>
+          </g>
+          <circle r="8.4" fill="none" stroke="currentColor" stroke-width="3.4"/>
+          <circle r="2.6" fill="var(--bg)"/>
+        </g>
+        <g transform="translate(40,18.5)">
+          <rect x="-1.5" y="-7.6" width="3" height="3.2" rx=".8"/>
+          <rect x="-1.5" y="4.4" width="3" height="3.2" rx=".8"/>
+          <rect x="-7.6" y="-1.5" width="3.2" height="3" rx=".8"/>
+          <rect x="4.4" y="-1.5" width="3.2" height="3" rx=".8"/>
+          <g transform="rotate(45)">
+            <rect x="-1.5" y="-7.6" width="3" height="3.2" rx=".8"/>
+            <rect x="-1.5" y="4.4" width="3" height="3.2" rx=".8"/>
+            <rect x="-7.6" y="-1.5" width="3.2" height="3" rx=".8"/>
+            <rect x="4.4" y="-1.5" width="3.2" height="3" rx=".8"/>
+          </g>
+          <circle r="5" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle r="1.5" fill="var(--bg)"/>
+        </g>
+      </g>
+    </svg>
+    <span class="wordmark">Andrea Cultraro</span>
+  </a>
+  <nav aria-label="Navigazione principale">
+    <a href="#in-corso">In corso</a>
+    <a href="#realizzati">Realizzati</a>
+    <a href="#chi-sono">Chi sono</a>
+    <a href="#contatti">Contatti</a>
+  </nav>
+  <span class="place">2026</span>
+</aside>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <header class="hero">
+    <div class="wrap hero-inner">
+      <p class="eyebrow">Sviluppo · Da autodidatta</p>
+      <h1>Sto imparando a costruire, <em>partendo dal fondo</em>.</h1>
+      <p class="lede">Ho iniziato dal web, ma la strada che mi interessa scende: verso il linguaggio C, verso il sistema operativo, verso l'hardware. Qui trovi i lavori a cui sto lavorando davvero, con i loro tempi veri.</p>
+      <p class="lede-en">This site is in Italian — but if you'd rather write to me in English, please do.</p>
+      <div class="actions">
+        <a class="btn" href="#in-corso">Cosa sto costruendo</a>
+        <a class="btn ghost" href="#chi-sono">Chi sono</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ IN COSTRUZIONE ============ -->
+  <section id="in-corso">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">In costruzione</p>
+        <h2>Il lavoro in corso</h2>
+      </div>
+      <p class="section-intro reveal">Non ho un catalogo di progetti conclusi. Ho tre cantieri aperti che vanno tutti nella stessa direzione, e che porto avanti nei ritagli di tempo tra il lavoro e la famiglia. È il percorso che conta, più dell'arrivo.</p>
+
+      <article class="project reveal">
+        <div class="meta">
+          <span class="row"><b>Stato</b><span class="status active"><span class="blk"></span>In sviluppo</span></span>
+          <span class="row"><b>Linguaggio</b>C (C11), GCC</span>
+          <span class="row"><b>A che punto sono</b>Motore completo: parser, scene, oggetti, inventario, flag di stato, uscite condizionali e dialoghi funzionanti. Sette stanze giocabili, tre finali progettati. 14 test automatici verdi.</span>
+        </div>
+        <div>
+          <h3>Vault 1: First Contact</h3>
+          <p class="sub">Avventura testuale a parser</p>
+          <p>Un'avventura testuale in C, nello spirito dei libri-game e dei giochi da terminale MS-DOS con cui ho conosciuto i computer. Si gioca scrivendo: guarda, prendi, usa, parla. Il cuore non è il combattimento ma il mistero — un rifugio sotterraneo, una versione ufficiale della realtà, e qualcuno che bussa a una porta che non doveva aprirsi.</p>
+          <p>Tutto il contenuto vive in file di testo separati dal codice, così le stanze e i dialoghi si aggiungono senza ricompilare. L'input e l'output del terminale sono isolati in un modulo a parte, per tenere il nucleo del gioco portabile: l'obiettivo a lungo termine è arrivare a una versione grafica, e più avanti a una build homebrew per console.</p>
+          <p>Ci lavoro un'ora o due a settimana, senza scadenze. L'ambientazione verrà rivista da cima a fondo prima della pubblicazione.</p>
+          <div class="links">
+            <span class="link muted">Repository privata per ora</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="project reveal">
+        <div class="meta">
+          <span class="row"><b>Stato</b><span class="status active"><span class="blk"></span>Fase concettuale</span></span>
+          <span class="row"><b>Ambito</b>Kernel, driver, GUI di basso livello</span>
+          <span class="row"><b>A che punto sono</b>Studio e lettura di codice altrui. Nessuna riga scritta: prima voglio capire come si parla a una macchina senza intermediari.</span>
+        </div>
+        <div>
+          <h3>Un sistema operativo</h3>
+          <p class="sub">Progetto di studio a lungo termine</p>
+          <p>L'idea è costruire da zero un sistema a finestre ispirato a quelli di fine anni Novanta. Non per nostalgia: perché è l'unico modo che conosco per capire davvero cosa succede sotto: come si comunica con l'hardware, come si gestisce la memoria, come si disegna un'interfaccia quando non c'è nessuna libreria a farlo per te.</p>
+          <p>L'ispirazione diretta è III-Millennium OS di Alberto Sanfelice, un sistema x86 a 32 bit scritto interamente in C e Assembly, senza dipendenze esterne. Studiarlo è impegnativo — è il lavoro di chi sa già dove sta andando — ma è esattamente il tipo di riferimento che serve per capire come si risolvono certi problemi.</p>
+          <div class="links">
+            <a class="link" href="https://github.com/511break-AS/Ante-Millennium-OS" target="_blank" rel="noopener">Il progetto che mi ispira ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="project reveal">
+        <div class="meta">
+          <span class="row"><b>Stato</b><span class="status paused"><span class="blk"></span>In pausa</span></span>
+          <span class="row"><b>Ambito</b>Elettronica, meccanica, software applicato</span>
+          <span class="row"><b>A che punto sono</b>Accantonato per mancanza di tempo. Tornerà.</span>
+        </div>
+        <div>
+          <h3>Robotica</h3>
+          <p class="sub">Un robot assistente, un giorno</p>
+          <p>L'ultimo gradino della stessa discesa: portare avanti in parallelo le basi di elettronica e meccanica insieme allo sviluppo software, fino a costruire un prototipo di robot assistente. È un obiettivo lontano e ne sono consapevole.</p>
+          <p>Non conta l'effettiva realizzazione concreta, ma il percorso. L'ho messo in pausa perché il tempo è quello che è, e preferisco portare avanti bene una cosa per volta.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ REALIZZATI ============ -->
+  <section id="realizzati">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Realizzati</p>
+        <h2>Cose finite e consegnate</h2>
+      </div>
+      <p class="section-intro reveal">Due lavori conclusi: uno di squadra, uno per un cliente vero. Diversi per contesto, ma entrambi mi hanno insegnato più della somma delle loro righe di codice.</p>
+
+      <article class="project reveal">
+        <div class="meta">
+          <span class="row"><b>Stato</b><span class="status done"><span class="blk"></span>Consegnato · 2025</span></span>
+          <span class="row"><b>Stack</b>Next.js, TypeScript, TailwindCSS, API OpenAI</span>
+          <span class="row"><b>Il mio ruolo</b>Prompt engineering degli agenti, integrazione API, contributo alle macchine a stati, presentazione dei progressi</span>
+        </div>
+        <div>
+          <h3>Recipe Chatbot</h3>
+          <p class="sub">Progetto di squadra · Summer camp</p>
+          <p>Faccio parte da anni della community <a class="inline" href="https://tomorrowdevs.com/" target="_blank" rel="noopener">TomorrowDevs</a>, ed è lì che è nata l'occasione: un summer camp a squadre, con più team in gara e una lista di requisiti minimi da rispettare. Questo progetto è il risultato.</p>
+          <p>Un chatbot di cucina che non ti dà mai la ricetta. Un cameriere virtuale accoglie l'utente, propone tre chef a caso, e dopo un'attesa volutamente esasperante parte una chat in cui il cuoco risponde con ingredienti sbagliati e divagazioni assurde. È una satira dell'attesa telefonica travestita da app di ricette.</p>
+          <p>Sotto la comicità c'è il problema di design interessante: far funzionare un'esperienza costruita per frustrare, senza che l'utente se ne vada. L'architettura usa tre agenti distinti — il cameriere, il cuoco, e un terzo agente tecnico che restituisce solo JSON per estrarre dati strutturati dalle risposte in linguaggio naturale — governati da macchine a stati esplicite.</p>
+          <p>Eravamo in sei sulla carta, di fatto abbiamo lavorato in tre o quattro, e i ruoli iniziali si sono ridisegnati strada facendo. La parte che non si vede nei commit è quella che mi ha insegnato di più: le videocall di allineamento tra noi e il confronto con gli altri team del contest.</p>
+          <div class="links">
+            <a class="link" href="https://open-ai-project-sepia.vercel.app/" target="_blank" rel="noopener">Provalo ↗</a>
+            <a class="link" href="https://github.com/AndrewCult/OpenAi_project" target="_blank" rel="noopener">Codice ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="project reveal">
+        <div class="meta">
+          <span class="row"><b>Stato</b><span class="status done"><span class="blk"></span>Online dal 2019</span></span>
+          <span class="row"><b>Stack</b>HTML, CSS, JavaScript, poi PHP</span>
+          <span class="row"><b>Il mio ruolo</b>Progettazione, sviluppo, manutenzione</span>
+        </div>
+        <div>
+          <h3>sp81coach.com</h3>
+          <p class="sub">Sito vetrina per un coach professionista</p>
+          <p>Il mio primo lavoro commissionato. Paolo, un ex collega diventato coach professionista, aveva bisogno di una vetrina che raccontasse il suo percorso di formazione e presentasse la sua proposta a possibili clienti — nello sport, nel lavoro, nella crescita personale.</p>
+          <p>Nato in HTML, CSS e JavaScript, è poi passato a PHP: non l'ho consegnato e dimenticato, l'ho fatto crescere. È online da anni e Paolo lo usa ancora.</p>
+          <p>Guardarlo oggi mi dà sensazioni contrastanti. Sono orgoglioso perché è stato il primo, e sono critico perché so di averlo fatto in fretta con metà delle conoscenze che ho adesso. Ma un sito che serve ancora il suo scopo dopo sette anni ha fatto il suo mestiere, e questo mi basta.</p>
+          <div class="links">
+            <a class="link" href="https://www.sp81coach.com/" target="_blank" rel="noopener">Visita il sito ↗</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ CHI SONO ============ -->
+  <section id="chi-sono">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Chi sono</p>
+        <h2>Fuori dallo schermo</h2>
+      </div>
+
+      <div class="about reveal">
+        <div class="bio">
+          <p class="lead">I computer mi affascinano da quando ero bambino. È per questo che ho scelto di diplomarmi Ragioniere Programmatore — informatica a scuola, Pascal, Visual Basic — e poi la vita ha preso un'altra direzione.</p>
+          <p>Alcune circostanze, alcune scelte sbagliate, e mi sono ritrovato a lavorare in logistica. Non è una storia drammatica: è successo, ed è quello che faccio ancora oggi. Ma la strada che avevo studiato per percorrere è rimasta lì, in attesa, e a un certo punto ho smesso di considerarla chiusa.</p>
+          <p>Ho ricominciato sul serio durante la quarantena, studiando HTML, CSS e JavaScript da solo. Da lì è arrivato il primo lavoro vero, poi il linguaggio C — di cui ormai sono innamorato — e la voglia di scendere sempre più vicino alla macchina. Che poi è la stessa curiosità di quando ero bambino, solo con gli strumenti per soddisfarla.</p>
+          <p>La cosa che so fare meglio non è scrivere codice: è imparare qualcosa e poi spiegarlo a qualcun altro. Documento tutto quello che faccio, non per disciplina astratta, ma perché scrivere come funziona una cosa è il modo in cui verifico di averla capita — e perché così qualcun altro può riprenderla da dove l'ho lasciata.</p>
+
+          <div class="facets">
+            <div class="facet"><b>Di giorno</b><span>Logistica. Il turno finisce, il resto comincia.</span></div>
+            <div class="facet"><b>A casa</b><span>La mia famiglia, il giardino, le cose che vanno curate ogni giorno.</span></div>
+            <div class="facet"><b>Ai fornelli</b><span>Cucino quando capita, senza pretese. Provo, sbaglio, riprovo — come con tutto il resto.</span></div>
+            <div class="facet"><b>Con la voce</b><span>Canto. E vorrei riprendere in mano la chitarra.</span></div>
+          </div>
+
+          <div class="skills">
+            <span>C</span>
+            <span>Linux · Manjaro</span>
+            <span>HTML · CSS</span>
+            <span>JavaScript</span>
+            <span>TypeScript</span>
+            <span>Next.js</span>
+            <span>PHP</span>
+            <span>Git</span>
+            <span>Neovim</span>
+            <span>Prompt engineering</span>
+          </div>
+          <p class="skills-note">Alle superiori: Pascal, Visual Basic. Tutto il resto è venuto dopo, da solo.</p>
+        </div>
+        <figure class="portrait">
+          <svg viewBox="0 0 320 400" fill="none" role="img" aria-labelledby="illu-t">
+            <title id="illu-t">Tre strati sovrapposti: una finestra di browser, un terminale, un microchip — la discesa dal web verso l'hardware</title>
+            <g stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round">
+              <g opacity=".42" stroke-width="1.6">
+                <rect x="60" y="34" width="200" height="86" rx="4"/>
+                <path d="M60 52 h200"/>
+                <circle cx="72" cy="43" r="2.2"/>
+                <circle cx="81" cy="43" r="2.2"/>
+                <circle cx="90" cy="43" r="2.2"/>
+                <path d="M76 68 h74M76 82 h108M76 96 h58"/>
+              </g>
+              <g opacity=".3" stroke-width="1.4" stroke-dasharray="3 6"><path d="M160 120 v34"/></g>
+              <g opacity=".55" stroke-width="1.6"><path d="M155 148 l5 6 5-6"/></g>
+              <g opacity=".72" stroke-width="1.8">
+                <rect x="60" y="166" width="200" height="86" rx="4"/>
+                <path d="M76 190 h10M92 190 h44"/>
+                <path d="M76 208 h10M92 208 h64"/>
+                <path d="M76 226 h10"/>
+              </g>
+              <rect class="cursor" x="92" y="220" width="9" height="12" fill="var(--accent)" stroke="none"/>
+              <g opacity=".3" stroke-width="1.4" stroke-dasharray="3 6"><path d="M160 252 v34"/></g>
+              <g opacity=".55" stroke-width="1.6"><path d="M155 280 l5 6 5-6"/></g>
+              <g stroke-width="2.1">
+                <rect x="106" y="298" width="108" height="72" rx="4"/>
+                <rect x="130" y="322" width="60" height="24" rx="2" stroke-width="1.7"/>
+                <path d="M106 312 h-22M106 328 h-30M106 344 h-22M106 358 h-34"/>
+                <path d="M214 312 h22M214 328 h30M214 344 h22M214 358 h34"/>
+                <g stroke-width="1.4" opacity=".6">
+                  <path d="M76 328 v22 h-14"/>
+                  <path d="M244 328 v-20 h16"/>
+                  <path d="M248 358 h18 v-26"/>
+                </g>
+              </g>
+              <circle cx="118" cy="310" r="2.4" fill="var(--accent)" stroke="none"/>
+            </g>
+          </svg>
+          <figcaption>Dal browser al terminale al silicio</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTATTI ============ -->
+  <section id="contatti" class="contact">
+    <div class="wrap reveal">
+      <p class="eyebrow">Contatti</p>
+      <h2>Scrivimi.</h2>
+      <p>Mi interessano le occasioni per imparare qualcosa che non so ancora fare, i progetti da portare avanti insieme, e il confronto con chi ha voglia di spiegare e di ascoltare. Se qualcosa qui ti ha incuriosito, fammelo sapere.</p>
+      <a class="email" href="mailto:cultraro.andrea@gmail.com">cultraro.andrea@gmail.com</a>
+      <div class="socials">
+        <a href="https://github.com/AndrewCult" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/andrea-cultraro-089929120/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Andrea Cultraro · cultraroandrea.com</span>
+    <span>© 2026</span>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: .1 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  const links = document.querySelectorAll('.spine nav a');
+  const sections = [...links].map(l => document.querySelector(l.getAttribute('href')));
+  const nav = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  sections.forEach(s => s && nav.observe(s));
+</script>
+
+</body>
+</html>
