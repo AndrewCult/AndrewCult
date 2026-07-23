@@ -32,4 +32,4 @@
 
 ---
 
-![AndrewCult's GitHub stats](https://github-readme-stats.vercel.app/api?username=AndrewCult&theme=gruvbox&count_private=true&show_icons=true&hide=stars,contribs)
+![AndrewCult's GitHub stats](https://github-stats-extended.vercel.app/api?username=AndrewCult&theme=gruvbox&count_private=true&show_icons=true&hide=stars,contribs)
